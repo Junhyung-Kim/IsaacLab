@@ -110,6 +110,8 @@ def main():
     except ValueError:
         experiment_cfg = load_cfg_from_registry(args_cli.task, "skrl_cfg_entry_point")
 
+    experiment_cfg["agent"]["experiment"]["wandb"] = False  # disable wandb logging
+
     # specify directory for logging experiments (load checkpoint)
     log_root_path = os.path.join("logs", "skrl", experiment_cfg["agent"]["experiment"]["directory"])
     log_root_path = os.path.abspath(log_root_path)

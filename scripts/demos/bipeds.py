@@ -43,6 +43,7 @@ from isaaclab.sim import SimulationContext
 from isaaclab_assets.robots.cassie import CASSIE_CFG  # isort:skip
 from isaaclab_assets import H1_CFG  # isort:skip
 from isaaclab_assets import G1_CFG  # isort:skip
+from isaaclab_assets import TOCABI_CFG, JET2_CFG  # isort:skip
 
 
 def design_scene(sim: sim_utils.SimulationContext) -> tuple[list, torch.Tensor]:
@@ -63,9 +64,12 @@ def design_scene(sim: sim_utils.SimulationContext) -> tuple[list, torch.Tensor]:
 
     # Robots
     cassie = Articulation(CASSIE_CFG.replace(prim_path="/World/Cassie"))
-    h1 = Articulation(H1_CFG.replace(prim_path="/World/H1"))
-    g1 = Articulation(G1_CFG.replace(prim_path="/World/G1"))
-    robots = [cassie, h1, g1]
+    # h1 = Articulation(H1_CFG.replace(prim_path="/World/H1"))
+    # g1 = Articulation(G1_CFG.replace(prim_path="/World/G1"))
+    tocabi = Articulation(TOCABI_CFG.replace(prim_path="/World/Tocabi"))
+    jet2 = Articulation(JET2_CFG.replace(prim_path="/World/Jet2"))
+    # robots = [cassie, h1, g1]
+    robots = [cassie, jet2, tocabi]
 
     return robots, origins
 

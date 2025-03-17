@@ -40,6 +40,7 @@ import torch
 
 from rl_games.common import env_configurations
 from rl_games.common.vecenv import IVecEnv
+from rl_games.common.algo_observer import AlgoObserver
 
 from isaaclab.envs import DirectRLEnv, ManagerBasedRLEnv, VecEnvObs
 
@@ -221,6 +222,7 @@ class RlGamesVecEnvWrapper(IVecEnv):
             "observation_space": self.observation_space,
             "action_space": self.action_space,
             "state_space": self.state_space,
+            **({"amp_observation_space": self.unwrapped.amp_observation_space} if "amp_observation_space" in self.unwrapped.__dict__ else {}), 
         }
 
     """
@@ -348,3 +350,33 @@ class RlGamesGpuEnv(IVecEnv):
             The Gym spaces for the environment.
         """
         return self.env.get_env_info()
+
+
+class MultiObserver(AlgoObserver):
+    """Meta-observer that allows the user to add several observers."""
+
+    def __init__(self, observers_):
+        super().__init__()
+        self.observers = observers_
+
+    def _call_multi(self, method, *args_, **kwargs_):
+        for o in self.observers:
+            getattr(o, method)(*args_, **kwargs_)
+
+    def before_init(self, base_name, config, experiment_name):
+        self._call_multi('before_init', base_name, config, experiment_name)
+
+    def after_init(self, algo):
+        self._call_multi('after_init', algo)
+
+    def process_infos(self, infos, done_indices):
+        self._call_multi('process_infos', infos, done_indices)
+
+    def after_steps(self):
+        self._call_multi('after_steps')
+
+    def after_clear_stats(self):
+        self._call_multi('after_clear_stats')
+
+    def after_print_stats(self, frame, epoch_num, total_time):
+        self._call_multi('after_print_stats', frame, epoch_num, total_time)

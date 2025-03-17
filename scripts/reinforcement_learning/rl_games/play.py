@@ -144,6 +144,15 @@ def main():
     agent_cfg["params"]["config"]["num_actors"] = env.unwrapped.num_envs
     # create runner from rl-games
     runner = Runner()
+    import learning.amp_players as amp_players
+    import learning.amp_models as amp_models
+    import learning.amp_network_builder as amp_network_builder
+    from rl_games.algos_torch import model_builder
+
+    runner.player_factory.register_builder('amp_continuous', lambda **kwargs : amp_players.AMPPlayerContinuous(**kwargs))
+    model_builder.register_model('continuous_amp', lambda network, **kwargs : amp_models.ModelAMPContinuous(network))
+    model_builder.register_network('amp', lambda **kwargs : amp_network_builder.AMPBuilder())
+
     runner.load(agent_cfg)
     # obtain the agent from the runner
     agent: BasePlayer = runner.create_player()
