@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         DCMotorCfg,
         DelayedPDActuatorCfg,
         IdealPDActuatorCfg,
+        IdealTorqueActuatorCfg,
         ImplicitActuatorCfg,
         RemotizedPDActuatorCfg,
     )
@@ -143,7 +144,32 @@ class ImplicitActuator(ActuatorBase):
 """
 Explicit Actuator Models.
 """
+class IdealTorqueActuator(ActuatorBase):
+    cfg: IdealTorqueActuatorCfg
+    """The configuration for the actuator model."""
 
+    """
+    Operations.
+    """
+
+    def reset(self, env_ids: Sequence[int]):
+        pass
+
+    def compute(
+        self, control_action: ArticulationActions, joint_pos: torch.Tensor, joint_vel: torch.Tensor
+    ) -> ArticulationActions:
+        # compute errors
+        error_pos = control_action.joint_positions - joint_pos
+        error_vel = control_action.joint_velocities - joint_vel
+        # calculate the desired joint torques
+        self.computed_effort = control_action.joint_efforts
+        # clip the torques based on the motor limits
+        self.applied_effort = self._clip_effort(self.computed_effort)
+        # set the computed actions back into the control action
+        control_action.joint_efforts = self.applied_effort
+        control_action.joint_positions = None
+        control_action.joint_velocities = None
+        return control_action
 
 class IdealPDActuator(ActuatorBase):
     r"""Ideal torque-controlled actuator model with a simple saturation model.

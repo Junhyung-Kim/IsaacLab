@@ -34,7 +34,7 @@ from isaaclab.utils import configclass
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets.robots.anymal import ANYMAL_C_CFG  # isort: skip
+from isaaclab_assets.robots import ANYMAL_C_CFG, Tocabi_CFG # isort: skip
 
 
 @configclass
@@ -50,13 +50,14 @@ class ContactSensorSceneCfg(InteractiveSceneCfg):
     )
 
     # robot
-    robot = ANYMAL_C_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    # robot = ANYMAL_C_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    robot = Tocabi_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
     # Rigid Object
     cube = RigidObjectCfg(
         prim_path="{ENV_REGEX_NS}/Cube",
         spawn=sim_utils.CuboidCfg(
-            size=(0.5, 0.5, 0.1),
+            size=(2.5, 2.5, 0.1),
             rigid_props=sim_utils.RigidBodyPropertiesCfg(),
             mass_props=sim_utils.MassPropertiesCfg(mass=100.0),
             collision_props=sim_utils.CollisionPropertiesCfg(),
@@ -67,7 +68,7 @@ class ContactSensorSceneCfg(InteractiveSceneCfg):
     )
 
     contact_forces_LF = ContactSensorCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/LF_FOOT",
+        prim_path="{ENV_REGEX_NS}/Robot/L_AnkleRoll_Link",
         update_period=0.0,
         history_length=6,
         debug_vis=True,
@@ -75,7 +76,7 @@ class ContactSensorSceneCfg(InteractiveSceneCfg):
     )
 
     contact_forces_RF = ContactSensorCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/RF_FOOT",
+        prim_path="{ENV_REGEX_NS}/Robot/R_AnkleRoll_Link",
         update_period=0.0,
         history_length=6,
         debug_vis=True,
@@ -83,7 +84,7 @@ class ContactSensorSceneCfg(InteractiveSceneCfg):
     )
 
     contact_forces_H = ContactSensorCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/.*H_FOOT",
+        prim_path="{ENV_REGEX_NS}/Robot/Pelvis_Link",
         update_period=0.0,
         history_length=6,
         debug_vis=True,

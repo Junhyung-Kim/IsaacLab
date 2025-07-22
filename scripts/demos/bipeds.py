@@ -43,6 +43,7 @@ from isaaclab.sim import SimulationContext
 from isaaclab_assets.robots.cassie import CASSIE_CFG  # isort:skip
 from isaaclab_assets import H1_CFG  # isort:skip
 from isaaclab_assets import G1_CFG  # isort:skip
+from isaaclab_assets import Tocabi_CFG  # isort:skip
 
 
 def design_scene(sim: sim_utils.SimulationContext) -> tuple[list, torch.Tensor]:
@@ -64,8 +65,9 @@ def design_scene(sim: sim_utils.SimulationContext) -> tuple[list, torch.Tensor]:
     # Robots
     cassie = Articulation(CASSIE_CFG.replace(prim_path="/World/Cassie"))
     h1 = Articulation(H1_CFG.replace(prim_path="/World/H1"))
-    g1 = Articulation(G1_CFG.replace(prim_path="/World/G1"))
-    robots = [cassie, h1, g1]
+    # g1 = Articulation(G1_CFG.replace(prim_path="/World/G1"))
+    tocabi = Articulation(Tocabi_CFG.replace(prim_path="/World/Tocabi"))
+    robots = [cassie, h1, tocabi]
 
     return robots, origins
 
@@ -79,7 +81,7 @@ def run_simulator(sim: sim_utils.SimulationContext, robots: list[Articulation], 
     # Simulate physics
     while simulation_app.is_running():
         # reset
-        if count % 200 == 0:
+        if count % 2000 == 0:
             # reset counters
             sim_time = 0.0
             count = 0
@@ -106,7 +108,19 @@ def run_simulator(sim: sim_utils.SimulationContext, robots: list[Articulation], 
         # update buffers
         for robot in robots:
             robot.update(sim_dt)
-
+            if robot == robots[2]:
+                # print(f"Robot height: {robot.data.root_pos_w[:, 2]} m")
+                # print(f"robot default mass: {torch.sum(robot.data.default_mass)} kg")
+                # print(robot.data.root_pos_w[:, 2], robot.data.root_pos_b[:, 2])
+                for i in range(len(robot.data.body_names)):
+                    print(robot.data.body_names[i])
+                    # if "_ankle" in robot.data.body_names[i]:
+                        # print(robot.data.body_link_pos_w[:, i, :3])
+                print("--------------------------------")
+                for i in range(len(robot.data.joint_names)):
+                    print(f"{robot.data.joint_names[i]}")
+                print("--------------------------------")
+                
 
 def main():
     """Main function."""
@@ -114,7 +128,7 @@ def main():
     sim_cfg = sim_utils.SimulationCfg(dt=0.005, device=args_cli.device)
     sim = SimulationContext(sim_cfg)
     # Set main camera
-    sim.set_camera_view(eye=[3.0, 0.0, 2.25], target=[0.0, 0.0, 1.0])
+    sim.set_camera_view(eye=[0.0, 5.0, 2.25], target=[0.0, 0.0, 1.0])
 
     # design scene
     robots, origins = design_scene(sim)

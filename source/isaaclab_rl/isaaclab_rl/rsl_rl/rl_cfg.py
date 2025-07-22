@@ -13,6 +13,7 @@ from isaaclab.utils import configclass
 from .distillation_cfg import RslRlDistillationAlgorithmCfg, RslRlDistillationStudentTeacherCfg
 from .rnd_cfg import RslRlRndCfg
 from .symmetry_cfg import RslRlSymmetryCfg
+from .custom_cfg import RslRlLcpCfg, RslRlBoundLossCfg
 
 #########################
 # Policy configurations #
@@ -122,6 +123,40 @@ class RslRlPpoAlgorithmCfg:
     in which case RND is not used.
     """
 
+    lcp_cfg: RslRlLcpCfg | None = None
+    """The configuration for the LCP module. Default is None, in which case LCP is not used."""
+
+    bound_loss_cfg: RslRlBoundLossCfg | None = None
+    """The configuration for the bound loss. Default is None, in which case bound loss is not used."""
+
+@configclass
+class RslRlAMPAlgorithmCfg(RslRlPpoAlgorithmCfg):
+    amp_cfg: RslRlAMPConfig | None = None
+    """The configuration for the AMP module. Default is None, in which case AMP is not used."""
+
+
+@configclass
+class RslRlAMPConfig:
+    """Configuration for the AMP module."""
+
+    num_amp_obs: int = MISSING
+    """The number of AMP observations."""
+
+    num_amp_output: int = MISSING
+    """The number of AMP output observations."""
+
+    hidden_dims: list[int] = MISSING
+    """The hidden dimensions of the discriminator network."""
+
+    activation: str = MISSING
+    """The activation function for the discriminator network."""
+
+    normalize_amp_obs: bool = True
+    """Whether to normalize the AMP observations."""
+
+    amp_replay_buffer_size: int = 100000
+    """The size of the AMP replay buffer."""
+
 
 #########################
 # Runner configurations #
@@ -150,7 +185,7 @@ class RslRlOnPolicyRunnerCfg:
     policy: RslRlPpoActorCriticCfg | RslRlDistillationStudentTeacherCfg = MISSING
     """The policy configuration."""
 
-    algorithm: RslRlPpoAlgorithmCfg | RslRlDistillationAlgorithmCfg = MISSING
+    algorithm: RslRlPpoAlgorithmCfg | RslRlDistillationAlgorithmCfg | RslRlAMPAlgorithmCfg = MISSING
     """The algorithm configuration."""
 
     clip_actions: float | None = None
@@ -192,7 +227,7 @@ class RslRlOnPolicyRunnerCfg:
     If regex expression, the latest (alphabetical order) matching run will be loaded.
     """
 
-    load_checkpoint: str = "model_.*.pt"
+    load_checkpoint: str = "model.*.pt"
     """The checkpoint file to load. Default is ``"model_.*.pt"`` (all).
 
     If regex expression, the latest (alphabetical order) matching file will be loaded.

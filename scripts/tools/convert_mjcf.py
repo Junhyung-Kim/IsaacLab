@@ -47,6 +47,12 @@ parser.add_argument(
     default=False,
     help="Make the asset instanceable for efficient cloning.",
 )
+parser.add_argument(
+    "--self-collision",
+    action="store_true",
+    default=False,
+    help="Activate self-collisions between links of the articulation.",
+)
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -92,6 +98,7 @@ def main():
         import_sites=args_cli.import_sites,
         force_usd_conversion=True,
         make_instanceable=args_cli.make_instanceable,
+        self_collision=args_cli.self_collision,
     )
 
     # Print info

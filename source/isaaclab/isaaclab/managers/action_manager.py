@@ -208,13 +208,14 @@ class ActionManager(ManagerBase):
         # create table for term information
         table = PrettyTable()
         table.title = f"Active Action Terms (shape: {self.total_action_dim})"
-        table.field_names = ["Index", "Name", "Dimension"]
+        table.field_names = ["Index", "Name", "Dimension", "Type"]
         # set alignment of table columns
         table.align["Name"] = "l"
         table.align["Dimension"] = "r"
+        table.align["Type"] = "l"
         # add info on each term
         for index, (name, term) in enumerate(self._terms.items()):
-            table.add_row([index, name, term.action_dim])
+            table.add_row([index, name, term.action_dim, term.__class__.__name__])
         # convert table to string
         msg += table.get_string()
         msg += "\n"

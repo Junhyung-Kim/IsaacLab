@@ -175,6 +175,11 @@ class ImplicitActuatorCfg(ActuatorBaseCfg):
 """
 Explicit Actuator Models.
 """
+@configclass
+class IdealTorqueActuatorCfg(ActuatorBaseCfg):
+    """Configuration for an ideal torque actuator."""
+
+    class_type: type = actuator_pd.IdealTorqueActuator
 
 
 @configclass

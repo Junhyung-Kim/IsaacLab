@@ -49,6 +49,7 @@ docker/artifacts/
 
 # Isaac-Sim packman
 _isaac_sim*
+_rsl_rl*
 _repo
 _build
 .lastformat
