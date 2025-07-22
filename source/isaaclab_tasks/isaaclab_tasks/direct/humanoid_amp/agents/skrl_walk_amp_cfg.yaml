@@ -101,6 +101,11 @@ agent:
     experiment_name: ""
     write_interval: auto
     checkpoint_interval: auto
+    wandb: False
+    wandb_kwargs:
+      project: "humanoid_amp_walk"
+      entity: "yongarry"
+
 
 
 # Sequential trainer

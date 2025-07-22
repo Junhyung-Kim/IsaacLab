@@ -390,6 +390,7 @@ class DirectRLEnv(gym.Env):
             self.obs_buf["policy"] = self._observation_noise_model(self.obs_buf["policy"])
 
         # return observations, rewards, resets and extras
+        self.extras['terminate'] = self.reset_terminated
         return self.obs_buf, self.reward_buf, self.reset_terminated, self.reset_time_outs, self.extras
 
     @staticmethod

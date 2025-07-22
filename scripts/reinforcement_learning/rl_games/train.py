@@ -175,8 +175,38 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # set number of actors into agent config
     agent_cfg["params"]["config"]["num_actors"] = env.unwrapped.num_envs
+
+    from utils.wandb_utils import WandbAlgoObserver
+    from isaaclab_rl.rl_games import MultiObserver
+    observers = [IsaacAlgoObserver()]
+
+    if agent_cfg["params"]["config"].get("wandb", False):
+        wandb_observer = WandbAlgoObserver(agent_cfg["params"]["config"])
+        observers.append(wandb_observer)
+
+        import wandb, signal, sys
+        def signal_handler(signum, frame):
+            print("SIGINT received. Finishing wandb run and exiting...")
+            wandb.finish()
+            sys.exit(0)  # 또는 raise KeyboardInterrupt
+
+        # SIGINT (Ctrl+C) 시그널에 대해 signal_handler를 등록합니다.
+        signal.signal(signal.SIGINT, signal_handler)
+
     # create runner from rl-games
-    runner = Runner(IsaacAlgoObserver())
+    # runner = Runner(IsaacAlgoObserver())
+    runner = Runner(MultiObserver(observers))
+
+    # load custom agent, player, network configurations
+    import learning.amp_continuous as amp_continuous
+    import learning.amp_models as amp_models
+    import learning.amp_network_builder as amp_network_builder
+    from rl_games.algos_torch import model_builder
+
+    runner.algo_factory.register_builder('amp_continuous', lambda **kwargs : amp_continuous.AMPAgent(**kwargs))
+    model_builder.register_model('continuous_amp', lambda network, **kwargs : amp_models.ModelAMPContinuous(network))
+    model_builder.register_network('amp', lambda **kwargs : amp_network_builder.AMPBuilder())
+
     runner.load(agent_cfg)
 
     # reset the agent and env
@@ -207,6 +237,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # close the simulator
     env.close()
+    if agent_cfg["params"]["config"].get("wandb", False):
+        wandb.finish()
 
 
 if __name__ == "__main__":
