@@ -12,8 +12,8 @@ from . import joint_actions_tocabi
 
 
 @configclass
-class JointPositionToLimitsTocabiLowLevelActionCfg(ActionTermCfg):
-    class_type: type[ActionTerm] = joint_actions_tocabi.JointPositionToLimitsTocabiLowLevelAction
+class TocabiActionCfg(ActionTermCfg):
+    class_type: type[ActionTerm] = joint_actions_tocabi.TocabiAction
 
     lower_joint_names: list[str] = MISSING
     """List of joint names or regex expressions that the action will be mapped to."""
@@ -33,6 +33,18 @@ class JointPositionToLimitsTocabiLowLevelActionCfg(ActionTermCfg):
     Note:
         This operation is performed after applying the scale factor.
     """
+
+    pd_control: bool = True
+    """Whether to use PD control. Defaults to True."""
+
+    torque_limits: list[float] = MISSING
+    """Torque limits for the action (float or dict of regex expressions). Only used when pd_control is False."""
+
+    p_gains: list[float] = MISSING
+    """P-gain for the action (float or dict of regex expressions)."""
+    
+    d_gains: list[float] = MISSING
+    """D-gain for the action (float or dict of regex expressions)."""
 
 @configclass
 class TocabiJointPositionActionCfg(ActionTermCfg):

@@ -111,6 +111,7 @@ class _OnnxPolicyExporter(torch.nn.Module):
         # copy policy parameters
         if hasattr(policy, "actor"):
             self.actor = copy.deepcopy(policy.actor)
+            self.critic = copy.deepcopy(policy.critic)
             if self.is_recurrent:
                 self.rnn = copy.deepcopy(policy.memory_a.rnn)
         elif hasattr(policy, "student"):
@@ -136,7 +137,7 @@ class _OnnxPolicyExporter(torch.nn.Module):
         return self.actor(x), h, c
 
     def forward(self, x):
-        return self.actor(self.normalizer(x))
+        return self.actor(self.normalizer(x)), self.critic(self.normalizer(x))
 
     def export(self, path, filename):
         self.to("cpu")
@@ -167,6 +168,6 @@ class _OnnxPolicyExporter(torch.nn.Module):
                 opset_version=11,
                 verbose=self.verbose,
                 input_names=["obs"],
-                output_names=["actions"],
+                output_names=["actions", "values"],
                 dynamic_axes={},
             )

@@ -10,12 +10,14 @@ from isaaclab.utils import configclass
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab_tasks.manager_based.locomotion.velocity.velocity_env_cfg import LocomotionVelocityRoughEnvCfg, ObservationsCfg
 from isaaclab_tasks.manager_based.locomotion.velocity.config.h1.rough_env_cfg import H1Rewards
+from isaaclab_tasks.manager_based.locomotion.velocity.mdp.actions import TocabiActionCfg
 from isaaclab.sensors import ContactSensorCfg
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.managers import EventTermCfg as EventTerm
+
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 ##
@@ -27,7 +29,7 @@ from isaaclab_assets import Tocabi_CFG  # isort: skip
 class TocabiActionsCfg:
     # joint_pos = mdp.JointPositionToLimitsActionCfg(asset_name="robot", joint_names=[".*"], rescale_to_limits=True)
     # joint_pos = mdp.JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5, use_default_offset=False)
-    joint_pos = mdp.JointPositionToLimitsTocabiLowLevelActionCfg(
+    joint_pos = TocabiActionCfg(
         asset_name="robot", 
         lower_joint_names=["L_HipYaw_Joint", "L_HipRoll_Joint", "L_HipPitch_Joint", "L_Knee_Joint", "L_AnklePitch_Joint", "L_AnkleRoll_Joint",
                            "R_HipYaw_Joint", "R_HipRoll_Joint", "R_HipPitch_Joint", "R_Knee_Joint", "R_AnklePitch_Joint", "R_AnkleRoll_Joint"],
@@ -35,6 +37,29 @@ class TocabiActionsCfg:
                            "L_Shoulder1_Joint", "L_Shoulder2_Joint", "L_Shoulder3_Joint", "L_Elbow_Joint", "L_Armlink_Joint", "L_Forearm_Joint", "L_Wrist1_Joint", "L_Wrist2_Joint",
                            "Neck_Joint", "Head_Joint",
                            "R_Shoulder1_Joint", "R_Shoulder2_Joint", "R_Shoulder3_Joint", "R_Elbow_Joint", "R_Armlink_Joint", "R_Forearm_Joint", "R_Wrist1_Joint", "R_Wrist2_Joint"],
+        pd_control=True,
+
+        p_gains = [2000.0, 5000.0, 4000.0, 3700.0, 3200.0, 3200.0, 
+                   2000.0, 5000.0, 4000.0, 3700.0, 3200.0, 3200.0, 
+                   6000.0, 10000.0, 10000.0, 
+                   400.0, 1000.0, 400.0, 400.0, 400.0, 400.0, 100.0, 100.0, 
+                   100.0, 100.0, 
+                   400.0, 1000.0, 400.0, 400.0, 400.0, 400.0, 100.0, 100.0],
+
+        d_gains = [15.0, 50.0, 20.0, 25.0, 24.0, 24.0, 
+                   15.0, 50.0, 20.0, 25.0, 24.0, 24.0, 
+                   200.0, 100.0, 100.0, 
+                   10.0, 28.0, 10.0, 10.0, 10.0, 10.0, 3.0, 3.0, 
+                   3.0, 3.0, 
+                   10.0, 28.0, 10.0, 10.0, 10.0, 10.0, 3.0, 3.0],
+
+        torque_limits= [333, 232, 263, 289, 222, 166,
+                        333, 232, 263, 289, 222, 166,
+                        303, 303, 303,
+                        64, 64, 64, 64, 23, 23, 10, 10,
+                        10, 10,
+                        64, 64, 64, 64, 23, 23, 10, 10],
+
     )
     # joint_pos = mdp.TocabiJointPositionActionCfg(
     #     asset_name="robot",
@@ -57,13 +82,13 @@ class TocabiObservations(ObservationsCfg):
         """Observations for policy group."""
 
         # observation terms (order preserved)
-        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.03, n_max=0.03))
-        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.03, n_max=0.03))
-        projected_gravity = ObsTerm(func=mdp.projected_gravity, noise=Unoise(n_min=-0.03, n_max=0.03))
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
+        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
+        projected_gravity = ObsTerm(func=mdp.projected_gravity, noise=Unoise(n_min=-0.1, n_max=0.1))
         clock_input = ObsTerm(func=mdp.clock_input, params={"step_time": 2.0})
         velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"})
         joint_pos = ObsTerm(func=mdp.joint_pos_ordered_rel, 
-                            noise=Unoise(n_min=-0.03, n_max=0.03),
+                            noise=Unoise(n_min=-0.1, n_max=0.1),
                             params={"asset_cfg": SceneEntityCfg("robot", joint_names=["L_HipYaw_Joint", "L_HipRoll_Joint", "L_HipPitch_Joint", "L_Knee_Joint", "L_AnklePitch_Joint", "L_AnkleRoll_Joint",
                                                                                      "R_HipYaw_Joint", "R_HipRoll_Joint", "R_HipPitch_Joint", "R_Knee_Joint", "R_AnklePitch_Joint", "R_AnkleRoll_Joint"])})
                                                                                     #  "Waist1_Joint", "Waist2_Joint", "Upperbody_Joint",
@@ -71,7 +96,7 @@ class TocabiObservations(ObservationsCfg):
                                                                                     #  "Neck_Joint", "Head_Joint",
                                                                                     #  "R_Shoulder1_Joint", "R_Shoulder2_Joint", "R_Shoulder3_Joint", "R_Elbow_Joint", "R_Armlink_Joint", "R_Forearm_Joint", "R_Wrist1_Joint", "R_Wrist2_Joint"])})
         joint_vel = ObsTerm(func=mdp.joint_vel_ordered_rel, 
-                            noise=Unoise(n_min=-0.03, n_max=0.03),
+                            noise=Unoise(n_min=-0.1, n_max=0.1),
                             params={"asset_cfg": SceneEntityCfg("robot", joint_names=["L_HipYaw_Joint", "L_HipRoll_Joint", "L_HipPitch_Joint", "L_Knee_Joint", "L_AnklePitch_Joint", "L_AnkleRoll_Joint",
                                                                                      "R_HipYaw_Joint", "R_HipRoll_Joint", "R_HipPitch_Joint", "R_Knee_Joint", "R_AnklePitch_Joint", "R_AnkleRoll_Joint"])})
                                                                                     #  "Waist1_Joint", "Waist2_Joint", "Upperbody_Joint",
@@ -257,7 +282,7 @@ class TocabiEventCfg:
     
     randomize_rigid_body_mass = EventTerm(
         func=mdp.randomize_rigid_body_mass,
-        mode="startup",
+        mode="reset",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
             "mass_distribution_params": (0.8, 1.2),
@@ -270,8 +295,20 @@ class TocabiEventCfg:
         mode="reset",
         params={
             "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+            "friction_distribution_params": (0.0, 0.0),
             "armature_distribution_params": (0.8, 1.2),
             "operation": "scale",
+        },
+    )
+
+    randomize_joint_properties = EventTerm(
+        func=mdp.randomize_actuator_gains,
+        mode="reset",
+        params={
+            "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+            "stiffness_distribution_params": (0.0, 0.0),
+            "damping_distribution_params": (0.0, 3.0),
+            "operation": "add",
         },
     )
 
@@ -289,12 +326,22 @@ class TocabiEventCfg:
         mode="interval",
         interval_range_s=(5.0, 6.0),
         params={
-            "force_range": (-200.0, 200.0),
-            "torque_range": (-50.0, 50.0),
+            "force_range": (-100.0, 100.0),
+            # "force_range": (-0.0, 0.0),
+            "torque_range": (-0.0, 0.0),    
             "asset_cfg": SceneEntityCfg("robot", body_names=["Pelvis_Link"]),
         },
     )
 
+    # random_torque_injection = EventTerm(
+    #     func=mdp.apply_external_force_torque,
+    #     mode="reset",
+    #     params={
+    #         "torque_range": (-0.0, 0.0),
+    #         "force_range": (-0.0, 0.0),
+    #         "asset_cfg": SceneEntityCfg("robot", body_names=[".*"]),
+    #     },
+    # )
 
 
 @configclass

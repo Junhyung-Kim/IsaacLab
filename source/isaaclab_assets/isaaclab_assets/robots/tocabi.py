@@ -12,7 +12,7 @@ The following configurations are available:
 """
 
 import isaaclab.sim as sim_utils
-from isaaclab.actuators import DCMotorCfg, IdealPDActuatorCfg, DelayedPDActuatorCfg
+from isaaclab.actuators import DCMotorCfg, IdealPDActuatorCfg, DelayedPDActuatorCfg, ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 import os
@@ -82,9 +82,10 @@ Tocabi_CFG = ArticulationCfg(
     soft_joint_pos_limit_factor=1.0,
     actuators={
         # "lowerbody": IdealPDActuatorCfg(
-        "lowerbody": DelayedPDActuatorCfg(
-            min_delay=0,
-            max_delay=2,
+        # "lowerbody": DelayedPDActuatorCfg(
+            # min_delay=0,
+            # max_delay=2,
+        "lowerbody": ImplicitActuatorCfg(
             joint_names_expr=[
                 ".*_HipYaw_Joint",
                 ".*_HipRoll_Joint",
@@ -92,24 +93,26 @@ Tocabi_CFG = ArticulationCfg(
                 ".*_Knee_Joint",
                 ".*_AnklePitch_Joint",
                 ".*_AnkleRoll_Joint"],
-            stiffness={
-                k: v / 9.0 for k, v in {
-                ".*_HipYaw_Joint": 2000.0,
-                ".*_HipRoll_Joint": 5000.0,
-                ".*_HipPitch_Joint": 4000.0,
-                ".*_Knee_Joint": 3700.0,
-                ".*_AnklePitch_Joint": 3200.0,
-                ".*_AnkleRoll_Joint": 3200.0}.items()
-            },
-            damping={
-                k: v / 3.0 for k, v in {
-                ".*_HipYaw_Joint": 15.0,
-                ".*_HipRoll_Joint": 50.0,
-                ".*_HipPitch_Joint": 20.0,
-                ".*_Knee_Joint": 25.0, 
-                ".*_AnklePitch_Joint": 24.0,
-                ".*_AnkleRoll_Joint": 24.0}.items()
-            },
+            # stiffness={
+            #     k: v / 9.0 for k, v in {
+            #     ".*_HipYaw_Joint": 2000.0,
+            #     ".*_HipRoll_Joint": 5000.0,
+            #     ".*_HipPitch_Joint": 4000.0,
+            #     ".*_Knee_Joint": 3700.0,
+            #     ".*_AnklePitch_Joint": 3200.0,
+            #     ".*_AnkleRoll_Joint": 3200.0}.items()
+            # },
+            # damping={
+            #     k: v / 3.0 for k, v in {
+            #     ".*_HipYaw_Joint": 15.0,
+            #     ".*_HipRoll_Joint": 50.0,
+            #     ".*_HipPitch_Joint": 20.0,
+            #     ".*_Knee_Joint": 25.0, 
+            #     ".*_AnklePitch_Joint": 24.0,
+            #     ".*_AnkleRoll_Joint": 24.0}.items()
+            # },
+            stiffness={".*": 0.0},
+            damping={".*": 1.0},
             effort_limit_sim={
                 ".*_HipYaw_Joint": 333,
                 ".*_HipRoll_Joint": 232,
@@ -129,7 +132,8 @@ Tocabi_CFG = ArticulationCfg(
             },
         ),
         # "upperbody": IdealTorqueActuatorCfg(
-        "upperbody": IdealPDActuatorCfg(
+        # "upperbody": IdealPDActuatorCfg(
+        "upperbody": ImplicitActuatorCfg(
             joint_names_expr=[
                 "Waist1_Joint",
                 "Waist2_Joint",
@@ -145,38 +149,40 @@ Tocabi_CFG = ArticulationCfg(
                 "Neck_Joint",
                 "Head_Joint"
             ],
-            stiffness={
-                k: v / 9.0 for k, v in {
-                "Waist1_Joint": 6000.0,
-                "Waist2_Joint": 10000.0,
-                "Upperbody_Joint": 10000.0,
-                ".*_Shoulder1_Joint": 400.0,
-                ".*_Shoulder2_Joint": 1000.0,
-                ".*_Shoulder3_Joint": 400.0,
-                ".*_Armlink_Joint": 400.0,
-                ".*_Elbow_Joint": 400.0,
-                ".*_Forearm_Joint": 400.0,
-                ".*_Wrist1_Joint": 100.0,
-                ".*_Wrist2_Joint": 100.0,
-                "Neck_Joint": 100.0,
-                "Head_Joint": 100.0}.items()
-            },
-            damping={
-                k: v / 3.0 for k, v in {
-                "Waist1_Joint": 200.0,
-                "Waist2_Joint": 100.0,
-                "Upperbody_Joint": 100.0,
-                ".*_Shoulder1_Joint": 10.0,
-                ".*_Shoulder2_Joint": 28.0,
-                ".*_Shoulder3_Joint": 10.0,
-                ".*_Armlink_Joint": 10.0,
-                ".*_Elbow_Joint": 10.0,
-                ".*_Forearm_Joint": 10.0,
-                ".*_Wrist1_Joint": 3.0,
-                ".*_Wrist2_Joint": 3.0,
-                "Neck_Joint": 3.0,
-                "Head_Joint": 3.0}.items()
-            },
+            # stiffness={
+            #     k: v / 9.0 for k, v in {
+            #     "Waist1_Joint": 6000.0,
+            #     "Waist2_Joint": 10000.0,
+            #     "Upperbody_Joint": 10000.0,
+            #     ".*_Shoulder1_Joint": 400.0,
+            #     ".*_Shoulder2_Joint": 1000.0,
+            #     ".*_Shoulder3_Joint": 400.0,
+            #     ".*_Armlink_Joint": 400.0,
+            #     ".*_Elbow_Joint": 400.0,
+            #     ".*_Forearm_Joint": 400.0,
+            #     ".*_Wrist1_Joint": 100.0,
+            #     ".*_Wrist2_Joint": 100.0,
+            #     "Neck_Joint": 100.0,
+            #     "Head_Joint": 100.0}.items()
+            # },
+            # damping={
+            #     k: v / 3.0 for k, v in {
+            #     "Waist1_Joint": 200.0,
+            #     "Waist2_Joint": 100.0,
+            #     "Upperbody_Joint": 100.0,
+            #     ".*_Shoulder1_Joint": 10.0,
+            #     ".*_Shoulder2_Joint": 28.0,
+            #     ".*_Shoulder3_Joint": 10.0,
+            #     ".*_Armlink_Joint": 10.0,
+            #     ".*_Elbow_Joint": 10.0,
+            #     ".*_Forearm_Joint": 10.0,
+            #     ".*_Wrist1_Joint": 3.0,
+            #     ".*_Wrist2_Joint": 3.0,
+            #     "Neck_Joint": 3.0,
+            #     "Head_Joint": 3.0}.items()
+            # },
+            stiffness={".*": 0.0},
+            damping={".*": 1.0},
             effort_limit_sim={
                 "Waist1_Joint": 303,
                 "Waist2_Joint": 303,

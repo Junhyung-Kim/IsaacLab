@@ -66,8 +66,8 @@ def clock_input(env: ManagerBasedRLEnv, step_time: float) -> torch.Tensor:
     """
     clock_input_sin = torch.sin(2 * math.pi * env.episode_length_buf.unsqueeze(1) * env.step_dt / step_time)
     clock_input_cos = torch.cos(2 * math.pi * env.episode_length_buf.unsqueeze(1) * env.step_dt / step_time)
-    # return torch.cat([clock_input_sin, clock_input_cos], dim=1)
-    return clock_input_sin
+    return torch.cat([clock_input_sin, clock_input_cos], dim=1)
+    # return clock_input_sin
 
 def last_processed_action(env: ManagerBasedEnv, action_name: str | None = None) -> torch.Tensor:
     """The last input action to the environment.
@@ -79,3 +79,23 @@ def last_processed_action(env: ManagerBasedEnv, action_name: str | None = None) 
         return env.action_manager.action
     else:
         return env.action_manager.get_term(action_name).processed_actions
+    
+
+def local_key_body_pos(env: ManagerBasedEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
+    """The local position of the key body relative to the robot's yaw root."""
+    # extract the used quantities (to enable type-hinting)
+    asset: Articulation = env.scene[asset_cfg.name]
+    root_pos = asset.data.root_link_pos_w
+    root_rot = asset.data.root_quat_w
+
+    heading_rot = math_utils.quat_conjugate(math_utils.yaw_quat(root_rot)) # wxyz order
+    body_ids_reordered = [asset.data.body_names.index(body_name) for body_name in asset_cfg.body_names]
+
+    key_body_pos = asset.data.body_link_pos_w[:, body_ids_reordered]
+    local_key_body_pos = key_body_pos - root_pos.unsqueeze(-2)
+    heading_rot_expand = heading_rot.unsqueeze(-2).repeat((1, local_key_body_pos.shape[1], 1))
+    flat_end_pos = local_key_body_pos.view(local_key_body_pos.shape[0] * local_key_body_pos.shape[1], local_key_body_pos.shape[2])
+    flat_heading_rot = heading_rot_expand.view(heading_rot_expand.shape[0] * heading_rot_expand.shape[1], heading_rot_expand.shape[2])
+    local_end_pos = math_utils.quat_apply(flat_heading_rot, flat_end_pos)
+    flat_local_key_pos = local_end_pos.view(local_key_body_pos.shape[0], local_key_body_pos.shape[1] * local_key_body_pos.shape[2])
+    return flat_local_key_pos

@@ -1,0 +1,7 @@
+motions:
+  - file: tocabi_0.6walk.txt
+    weight: 0.5
+    clip_motion_range: [4400, 9201]
+  - file: tocabi_0.9walk.txt
+    weight: 0.5
+    clip_motion_range: [5600, 12801]

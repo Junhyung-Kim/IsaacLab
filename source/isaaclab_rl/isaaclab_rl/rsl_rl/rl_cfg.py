@@ -42,6 +42,14 @@ class RslRlPpoActorCriticCfg:
     activation: str = MISSING
     """The activation function for the actor and critic networks."""
 
+@configclass
+class RslRlPpoActorCriticSpectralNormCfg(RslRlPpoActorCriticCfg):
+    """Configuration for the PPO actor-critic networks with spectral normalization."""
+
+    class_name: str = "ActorCritic_SN"
+    """The policy class name. Default is ActorCritic_SN."""
+    
+    lipschitz_constant: float = MISSING
 
 @configclass
 class RslRlPpoActorCriticRecurrentCfg(RslRlPpoActorCriticCfg):
@@ -131,6 +139,11 @@ class RslRlPpoAlgorithmCfg:
 
 @configclass
 class RslRlAMPAlgorithmCfg(RslRlPpoAlgorithmCfg):
+    """Configuration for the AMP PPO algorithm."""
+
+    class_name: str = "AMP"
+    """The algorithm class name. Default is AMP."""
+
     amp_cfg: RslRlAMPConfig | None = None
     """The configuration for the AMP module. Default is None, in which case AMP is not used."""
 
@@ -139,9 +152,37 @@ class RslRlAMPAlgorithmCfg(RslRlPpoAlgorithmCfg):
 class RslRlAMPConfig:
     """Configuration for the AMP module."""
 
-    num_amp_obs: int = MISSING
+    num_amp_obs_per_step: int = MISSING
     """The number of AMP observations."""
 
+    num_amp_obs_steps: int = 2
+    """The number of AMP observations steps. Default is 2."""
+
+    amp_replay_buffer_size: int = 100000
+    """The size of the AMP replay buffer."""
+
+    disc_loss_coef: float = 1.0
+    """The loss coefficient for the discriminator."""
+    
+    disc_grad_pen: float = 1.0
+    """The gradient penalty coefficient for the discriminator."""
+
+    disc_logit_loss_coef: float = 0.05
+    """The loss coefficient for the discriminator logit."""
+    
+    motion_file: str = MISSING
+    """The path to the AMP motion file."""
+
+    task_reward_ratio: float = 1.0
+    """The ratio of the task reward to the AMP reward."""
+
+    disc_cfg: RslRlDiscriminatorCfg | None = None
+    """The configuration for the discriminator."""
+
+@configclass
+class RslRlDiscriminatorCfg:
+    """Configuration for the discriminator."""
+    
     num_amp_output: int = MISSING
     """The number of AMP output observations."""
 
@@ -153,10 +194,12 @@ class RslRlAMPConfig:
 
     normalize_amp_obs: bool = True
     """Whether to normalize the AMP observations."""
+    
+    gan_type: Literal["wgan", "lsgan", "vanilla"] = "lsgan"
+    """The type of GAN to use. Default is lsgan."""
 
-    amp_replay_buffer_size: int = 100000
-    """The size of the AMP replay buffer."""
-
+    amp_reward_weight: float = 1.0
+    """The weight for the AMP reward."""
 
 #########################
 # Runner configurations #
