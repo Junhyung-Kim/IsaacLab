@@ -10,10 +10,26 @@ import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab.managers import SceneEntityCfg
 
 @configclass
-class TocabiFlatEnvCfg(TocabiRoughEnvCfg):
+class TocabiFlatPosEnvCfg(TocabiRoughEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
+        self.actions.joint_pos.pd_control = True
+        # change terrain to flat
+        self.scene.terrain.terrain_type = "plane"
+        self.scene.terrain.terrain_generator = None
+        # no height scan
+        self.scene.height_scanner = None
+        self.observations.policy.height_scan = None
+        # no terrain curriculum
+        self.curriculum.terrain_levels = None
+
+@configclass
+class TocabiFlatTorqEnvCfg(TocabiRoughEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        self.actions.joint_pos.pd_control = False
 
         # change terrain to flat
         self.scene.terrain.terrain_type = "plane"
@@ -25,22 +41,29 @@ class TocabiFlatEnvCfg(TocabiRoughEnvCfg):
         self.curriculum.terrain_levels = None
 
 
-class TocabiFlatEnvCfg_PLAY(TocabiFlatEnvCfg):
+class TocabiFlatEnvCfg_PLAY(TocabiFlatPosEnvCfg):
     def __post_init__(self) -> None:
         # post init of parent
         super().__post_init__()
 
         # make a smaller scene for play
+        self.episode_length_s = 10.0
         self.scene.num_envs = 16
         self.scene.env_spacing = 2.5
-        # self.viewer.resolution = (3840, 2160)
         self.viewer.resolution = (2560, 1440)
         # self.viewer.resolution = (1920, 1080)
+        self.viewer.eye = (-3.0, 3.0, 1.3)
+        self.viewer.lookat = (0.0, 0.0, 0.0)
+        self.viewer.origin_type = "asset_root"
+        self.viewer.asset_name = "robot"
+        self.viewer.env_index = -1
+
         # disable randomization for play
         self.observations.policy.enable_corruption = False
         # remove random pushing
-        # self.events.base_external_force_torque = None
         # self.events.push_robot = None
+        self.commands.base_velocity.resampling_time_range = (10.0, 10.0)
+
         self.rewards.contact_force_l = RewTerm(
             func=mdp.contact_force,
             weight=1.0,
@@ -51,16 +74,6 @@ class TocabiFlatEnvCfg_PLAY(TocabiFlatEnvCfg):
             weight=1.0,
             params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names="R_AnkleRoll.*")},
         )
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -80,7 +93,7 @@ class TocabiMimicRewards(TocabiRewards):
         },
     )
 @configclass
-class TocabiMimicEnvCfg(TocabiFlatEnvCfg):
+class TocabiMimicEnvCfg(TocabiFlatPosEnvCfg):
     rewards: TocabiMimicRewards = TocabiMimicRewards()
 
     def __post_init__(self):

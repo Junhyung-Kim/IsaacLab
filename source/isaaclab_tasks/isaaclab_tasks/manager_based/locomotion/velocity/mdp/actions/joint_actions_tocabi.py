@@ -46,6 +46,9 @@ class TocabiAction(ActionTerm):
         self._p_gains = torch.tensor(self.cfg.p_gains, device=self.device)
         self._d_gains = torch.tensor(self.cfg.d_gains, device=self.device)
         self._torque_limits = torch.tensor(self.cfg.torque_limits, device=self.device)
+        self._rand_torque_inj_range = torch.tensor(self.cfg.rand_torque_inj_range, device=self.device)
+        self._rand_motor_scale_range = torch.tensor(self.cfg.rand_motor_scale_range, device=self.device)
+        self._lower_joint_pos_limits = torch.tensor(self.cfg.joint_pos_limits, device=self.device)
 
         self._num_joints = len(self._joint_ids)
         # log the resolved joint names for debugging
@@ -113,15 +116,17 @@ class TocabiAction(ActionTerm):
             )
         # rescale the position targets if configured
         # this is useful when the input actions are in the range [-1, 1]
-        if self.cfg.rescale_to_limits:
+        if self.cfg.rescale_to_limits and self.cfg.pd_control:
             # clip to [-1, 1]
             actions = self._processed_actions.clamp(-1.0, 1.0)
             self._raw_actions[:] = actions
             # rescale within the joint limits
             actions = math_utils.unscale_transform(
                 actions,
-                self._asset.data.soft_joint_pos_limits[:, self._joint_ids, 0],
-                self._asset.data.soft_joint_pos_limits[:, self._joint_ids, 1],
+                # self._asset.data.soft_joint_pos_limits[:, self._joint_ids, 0],
+                # self._asset.data.soft_joint_pos_limits[:, self._joint_ids, 1],
+                self._lower_joint_pos_limits[:, 0],
+                self._lower_joint_pos_limits[:, 1],
             )
             self._processed_actions[:] = actions[:]
 
@@ -129,26 +134,25 @@ class TocabiAction(ActionTerm):
         # set position targets
         # self._asset.set_joint_position_target(self.processed_actions, joint_ids=self._joint_ids)
         # self._asset.set_joint_position_target(self._default_upper_joint_pos, joint_ids=self._upper_joint_ids)
+        joint_ids_ordered = self._joint_ids + self._upper_joint_ids
         if self.cfg.pd_control:
             target_pos = torch.cat([self.processed_actions, self._default_upper_joint_pos], dim=1)
-            joint_ids_ordered = self._joint_ids + self._upper_joint_ids
-            # self._asset.set_joint_position_target(target_pos, joint_ids=joint_ids_ordered)
-            target_effort = self._p_gains / 9.0 * (target_pos - self._asset.data.joint_pos[:, joint_ids_ordered]) + self._d_gains / 3.0 * (- self._asset.data.joint_vel[:, joint_ids_ordered])
-            # rand_torque_injection = torch.randn_like(target_effort) * 100.0 - 50.0
-            rand_torque_injection = torch.randn_like(target_effort) * 0.0
-            target_effort[:, :12] = target_effort[:, :12] + rand_torque_injection[:, :12]
+            # target_effort = self._p_gains / 9.0 * (target_pos - self._asset.data.joint_pos[:, joint_ids_ordered]) + self._d_gains / 3.0 * (- self._asset.data.joint_vel[:, joint_ids_ordered])
+            lower_body_torque = self._p_gains[:12] / 9.0 * (target_pos[:,:12] - self._asset.data.joint_pos[:, self._joint_ids]) + self._d_gains[:12] / 3.0 * (- self._asset.data.joint_vel[:, self._joint_ids])
+            upper_body_torque = self._p_gains[12:] * (target_pos[:,12:] - self._asset.data.joint_pos[:, self._upper_joint_ids]) + self._d_gains[12:] * (- self._asset.data.joint_vel[:, self._upper_joint_ids])
+            target_effort = torch.cat([lower_body_torque, upper_body_torque], dim=1)
         else:
             # 0.8 ~ 1.2
-            rand_motor_scale = torch.randn_like(self.processed_actions) * 0.4 + 0.8
-            lower_body_torque = self.processed_actions * self._torque_limits[:, :12] * rand_motor_scale
+            rand_motor_scale = math_utils.sample_uniform(self._rand_motor_scale_range[0], self._rand_motor_scale_range[1], self.processed_actions.shape, device=self.device)
+            lower_body_torque = self.processed_actions * self._torque_limits[:12] * rand_motor_scale
             upper_body_torque = self._p_gains[12:] / 9.0 * (self._default_upper_joint_pos - self._asset.data.joint_pos[:, self._upper_joint_ids]) \
                               + self._d_gains[12:] / 3.0 * (- self._asset.data.joint_vel[:, self._upper_joint_ids])
-            target_effort = torch.cat([lower_body_torque, upper_body_torque], dim=1)
+            lower_rand_torque_inj = math_utils.sample_uniform(self._rand_torque_inj_range[0], self._rand_torque_inj_range[1], lower_body_torque.shape, device=self.device)
+            target_effort = torch.cat([lower_body_torque + lower_rand_torque_inj, upper_body_torque], dim=1)
 
         self._asset.set_joint_effort_target(target_effort, joint_ids=joint_ids_ordered)
     
         
-
     def reset(self, env_ids: Sequence[int] | None = None) -> None:
         self._raw_actions[env_ids] = 0.0
 

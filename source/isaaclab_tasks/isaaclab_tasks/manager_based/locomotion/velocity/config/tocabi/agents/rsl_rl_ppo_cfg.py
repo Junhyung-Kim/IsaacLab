@@ -5,10 +5,16 @@
 
 from isaaclab.utils import configclass
 
-from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, RslRlPpoAlgorithmCfg, \
-    RslRlPpoActorCriticRecurrentCfg, \
-    RslRlLcpCfg, RslRlSymmetryCfg, RslRlBoundLossCfg
-
+from isaaclab_rl.rsl_rl import (
+    RslRlOnPolicyRunnerCfg, 
+    RslRlPpoActorCriticCfg, 
+    RslRlPpoActorCriticSpectralNormCfg,
+    RslRlPpoActorCriticRecurrentCfg,
+    RslRlPpoAlgorithmCfg, 
+    RslRlLcpCfg, 
+    RslRlSymmetryCfg, 
+    RslRlBoundLossCfg
+)
 
 @configclass
 class TocabiRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
@@ -17,11 +23,13 @@ class TocabiRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     save_interval = 50
     experiment_name = "tocabi_rough"
     empirical_normalization = True
-    policy = RslRlPpoActorCriticCfg(
     # policy = RslRlPpoActorCriticRecurrentCfg(
         # rnn_type="lstm",
         # rnn_hidden_dim=256,
         # rnn_num_layers=1,
+    # policy = RslRlPpoActorCriticSpectralNormCfg(
+        # lipschitz_constant=0.2,
+    policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
         actor_hidden_dims=[512, 256, 128],
         critic_hidden_dims=[512, 256, 128],
@@ -41,14 +49,13 @@ class TocabiRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.004,
         max_grad_norm=1.0,
         lcp_cfg=RslRlLcpCfg(
-            gradient_penalty_coef=0.005,
+            gradient_penalty_coef=0.002,
         ),
         bound_loss_cfg=RslRlBoundLossCfg(
             bound_loss_coef=10,
             bound_range=1.1,
         ),
     )
-
 
 @configclass
 class TocabiFlatPPORunnerCfg(TocabiRoughPPORunnerCfg):
@@ -59,12 +66,6 @@ class TocabiFlatPPORunnerCfg(TocabiRoughPPORunnerCfg):
         self.experiment_name = "tocabi_flat"
         self.policy.actor_hidden_dims = [512, 256, 128]
         self.policy.critic_hidden_dims = [512, 256, 128]
-        # self.algorithm.symmetry_cfg = RslRlSymmetryCfg(
-        #     use_data_augmentation=False,
-        #     use_mirror_loss=True,
-        #     data_augmentation_func=,
-        #     mirror_loss_coeff=0.2,
-        # )
 
 @configclass
 class TocabiMimicPPORunnerCfg(TocabiRoughPPORunnerCfg):

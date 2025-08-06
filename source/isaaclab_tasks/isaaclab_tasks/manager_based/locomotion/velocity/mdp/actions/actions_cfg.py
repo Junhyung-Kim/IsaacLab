@@ -37,6 +37,8 @@ class TocabiActionCfg(ActionTermCfg):
     pd_control: bool = True
     """Whether to use PD control. Defaults to True."""
 
+    joint_pos_limits: list[tuple[float, float]] = MISSING
+
     torque_limits: list[float] = MISSING
     """Torque limits for the action (float or dict of regex expressions). Only used when pd_control is False."""
 
@@ -45,6 +47,12 @@ class TocabiActionCfg(ActionTermCfg):
     
     d_gains: list[float] = MISSING
     """D-gain for the action (float or dict of regex expressions)."""
+
+    rand_torque_inj_range: tuple[float, float] = (0.0, 0.0)
+    """Range for the random torque injection. Defaults to (0.0, 0.0)."""
+
+    rand_motor_scale_range: tuple[float, float] = (0.8, 1.2)
+    """Range for the random motor scale. Defaults to (0.8, 1.2)."""
 
 @configclass
 class TocabiJointPositionActionCfg(ActionTermCfg):

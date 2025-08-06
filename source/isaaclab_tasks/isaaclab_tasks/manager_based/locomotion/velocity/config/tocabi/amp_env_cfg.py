@@ -156,11 +156,11 @@ class TocabiObservations:
     @configclass
     class AMPCfg(ObsGroup):
         base_rot = ObsTerm(func=mdp.root_quat_w, noise=Unoise(n_min=-0.0, n_max=0.0))
-        joint_pos = ObsTerm(func=mdp.joint_pos_ordered_rel, 
+        joint_pos = ObsTerm(func=mdp.joint_pos_ordered, 
                             noise=Unoise(n_min=-0.0, n_max=0.0),
                             params={"asset_cfg": SceneEntityCfg("robot", joint_names=["L_HipYaw_Joint", "L_HipRoll_Joint", "L_HipPitch_Joint", "L_Knee_Joint", "L_AnklePitch_Joint", "L_AnkleRoll_Joint",
                                                                                      "R_HipYaw_Joint", "R_HipRoll_Joint", "R_HipPitch_Joint", "R_Knee_Joint", "R_AnklePitch_Joint", "R_AnkleRoll_Joint"])})
-        joint_vel = ObsTerm(func=mdp.joint_vel_ordered_rel, 
+        joint_vel = ObsTerm(func=mdp.joint_vel_ordered, 
                             noise=Unoise(n_min=-0.0, n_max=0.0),
                             params={"asset_cfg": SceneEntityCfg("robot", joint_names=["L_HipYaw_Joint", "L_HipRoll_Joint", "L_HipPitch_Joint", "L_Knee_Joint", "L_AnklePitch_Joint", "L_AnkleRoll_Joint",
                                                                                      "R_HipYaw_Joint", "R_HipRoll_Joint", "R_HipPitch_Joint", "R_Knee_Joint", "R_AnklePitch_Joint", "R_AnkleRoll_Joint"])})
@@ -350,7 +350,7 @@ class TocabiAMPRoughEnvCfg_PLAY(TocabiAMPRoughEnvCfg):
         self.observations.policy.enable_corruption = False
 
 @configclass
-class TocabiAMPRoughEnvCfg_PLAY(TocabiAMPFlatEnvCfg):
+class TocabiAMPFlatEnvCfg_PLAY(TocabiAMPFlatEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

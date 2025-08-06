@@ -174,9 +174,10 @@ class ObservationManager(ManagerBase):
                 self._group_obs_term_dim[group_name],
             ):
                 data_length = np.prod(shape)
-                term = data[env_idx, idx : idx + data_length]
+                # yongarry edit: only vizualizing the current observation, not the history
+                term = data[env_idx, idx : idx + (data_length // self._group_obs_term_history_buffer[group_name][name].max_length)]
                 terms.append((group_name + "-" + name, term.cpu().tolist()))
-                idx += data_length
+                idx += data_length // self._group_obs_term_history_buffer[group_name][name].max_length
 
         return terms
 

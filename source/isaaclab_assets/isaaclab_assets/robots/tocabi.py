@@ -23,10 +23,8 @@ import os
 
 Tocabi_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        # usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/Tocabi.usd",
-        # usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/tocabi.usd",
-        usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/tocabi_.usd",
-        # usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/tocabi_xml_minimal.usd",
+        usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/tocabi.usd",
+        # usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/dyros_tocabi.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -77,7 +75,6 @@ Tocabi_CFG = ArticulationCfg(
             "R_Wrist1_Joint": 1.0,
             "R_Wrist2_Joint": 0.0,
         },
-        joint_vel={".*": 0.0},
     ),
     soft_joint_pos_limit_factor=1.0,
     actuators={
