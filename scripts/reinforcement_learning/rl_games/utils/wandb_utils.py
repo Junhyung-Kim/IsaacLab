@@ -27,11 +27,12 @@ class WandbAlgoObserver(AlgoObserver):
 
         # this can fail occasionally, so we try a couple more times
         @retry(3, exceptions=(Exception,))
+        
         def init_wandb():
             wandb.init(
                 project=cfg["wandb_project"],
                 entity=cfg["wandb_entity"],
-                group=cfg["wandb_group"],
+                #group=cfg["wandb_group"],
                 tags=cfg["wandb_tags"],
                 sync_tensorboard=True,
                 id=wandb_unique_id,

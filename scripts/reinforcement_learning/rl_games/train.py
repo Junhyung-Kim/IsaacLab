@@ -176,7 +176,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # set number of actors into agent config
     agent_cfg["params"]["config"]["num_actors"] = env.unwrapped.num_envs
 
-    from utils.wandb_utils import WandbAlgoObserver
+    import sys                                  
+    sys.path.append("/home/jhk/IsaacSim/IsaacLab/scripts/reinforcement_learning/rl_games/utils")
+ 
+    from wandb_utils import WandbAlgoObserver
     from isaaclab_rl.rl_games import MultiObserver
     observers = [IsaacAlgoObserver()]
 

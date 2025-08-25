@@ -70,7 +70,7 @@ agent:
   learning_rate: 1.0e-04
   learning_rate_scheduler: "KLAdaptiveLR"
   learning_rate_scheduler_kwargs: 
-    kl_threshold: 0.008
+  kl_threshold: 0.008
   state_preprocessor: RunningStandardScaler
   state_preprocessor_kwargs: null
   value_preprocessor: RunningStandardScaler
@@ -105,7 +105,7 @@ agent:
     wandb: True
     wandb_kwargs:
       project: "tocabi_amp_walk"
-      entity: "yongarry"
+      entity: "john3-16-seoul-national-university"
       name: "skrl"
 
 

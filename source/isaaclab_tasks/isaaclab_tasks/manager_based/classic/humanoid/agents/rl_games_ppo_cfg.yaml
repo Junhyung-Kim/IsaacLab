@@ -76,7 +76,7 @@ params:
 
     wandb: True
     wandb_group: ''
-    wandb_entity: 'yongarry'
+    wandb_entity: 'john3-16'
     wandb_project: 'humanoid_test'
     wandb_tags: []
     wandb_logcode_dir: '' 

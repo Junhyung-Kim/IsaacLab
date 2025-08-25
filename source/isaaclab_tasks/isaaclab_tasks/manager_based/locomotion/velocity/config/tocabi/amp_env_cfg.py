@@ -21,7 +21,7 @@ from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort: skip
 
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
 from isaaclab_tasks.manager_based.locomotion.velocity.mdp.actions import TocabiActionCfg
-from isaaclab_assets import Tocabi_CFG  # isort: skip
+from isaaclab_assets import TOCABI_CFG  # isort: skip
 
 @configclass
 class TocabiAMPSceneCfg(InteractiveSceneCfg):

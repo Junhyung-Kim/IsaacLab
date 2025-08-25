@@ -174,7 +174,7 @@ class ObservationManager(ManagerBase):
                 self._group_obs_term_dim[group_name],
             ):
                 data_length = np.prod(shape)
-                # yongarry edit: only vizualizing the current observation, not the history
+                # jhk edit: only vizualizing the current observation, not the history
                 term = data[env_idx, idx : idx + (data_length // self._group_obs_term_history_buffer[group_name][name].max_length)]
                 terms.append((group_name + "-" + name, term.cpu().tolist()))
                 idx += data_length // self._group_obs_term_history_buffer[group_name][name].max_length
@@ -354,7 +354,7 @@ class ObservationManager(ManagerBase):
 
                 if term_cfg.flatten_history_dim:
                     # group_obs[term_name] = circular_buffer.buffer.reshape(self._env.num_envs, -1)
-                    #### yongarry edit ####
+                    #### jhk edit ####
                     ###### purpose: to make the history observation order with another way ######
                     group_obs[term_name] = circular_buffer.buffer
                 else:
@@ -366,7 +366,7 @@ class ObservationManager(ManagerBase):
         if self._group_obs_concatenate[group_name]:
             # set the concatenate dimension, account for the batch dimension if positive dimension is given
             # return torch.cat(list(group_obs.values()), dim=self._group_obs_concatenate_dim[group_name])
-            #### yongarry edit ####
+            #### jhk edit ####
             ###### purpose: to make the history observation order with another way ######
             return torch.cat(list(group_obs.values()), dim=self._group_obs_concatenate_dim[group_name]).reshape(self._env.num_envs, -1)
         else:

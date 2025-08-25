@@ -24,7 +24,7 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets import Tocabi_CFG  # isort: skip
+from isaaclab_assets import TOCABI_CFG  # isort: skip
 
 @configclass
 class TocabiActionsCfg:

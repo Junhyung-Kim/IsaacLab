@@ -11,17 +11,17 @@ The following configurations are available:
 * :obj:`Tocabi_MINIMAL_CFG`: Tocabi humanoid robot with minimal collision bodies
 """
 
+import os
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import DCMotorCfg, IdealPDActuatorCfg, DelayedPDActuatorCfg, ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
-import os
+
 
 ##
 # Configuration - Actuators.
 ##
-
-Tocabi_CFG = ArticulationCfg(
+TOCABI_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
         usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/tocabi.usd",
         # usd_path=f"{os.getcwd()}/source/isaaclab_assets/data/Robots/Tocabi/dyros_tocabi.usd",
@@ -216,8 +216,6 @@ Tocabi_CFG = ArticulationCfg(
 """Configuration for the Tocabi Humanoid robot."""
 
 
-# Tocabi_MINIMAL_CFG = Tocabi_CFG.copy()
-# Tocabi_MINIMAL_CFG.spawn.usd_path = f"{ISAACLAB_NUCLEUS_DIR}/Robots/Tocabi/Tocabi_minimal.usd"
 """Configuration for the Tocabi Humanoid robot with fewer collision meshes.
 
 This configuration removes most collision meshes to speed up simulation.

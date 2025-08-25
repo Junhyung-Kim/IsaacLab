@@ -1,5 +1,5 @@
-asset_path: /home/yong/IsaacGym/IsaacLab/source/isaaclab_assets/robot_files/dyros_jet2/dyros_jet_legs_.urdf
-usd_dir: /home/yong/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2
+asset_path: /home/jhk/IsaacGym/IsaacLab/source/isaaclab_assets/robot_files/dyros_jet2/dyros_jet_legs_.urdf
+usd_dir: /home/jhk/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2
 usd_file_name: Jet2_.usd
 force_usd_conversion: true
 make_instanceable: true

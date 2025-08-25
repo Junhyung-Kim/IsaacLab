@@ -103,9 +103,9 @@ class TocabiAmpEnvCfg(DirectRLEnvCfg):
     """
 
     # input commands range
-    cmd_x_range = [-0.5, 0.5]
+    cmd_x_range = [-0.4, 0.4]#[-0.5, 0.5]
     cmd_y_range = [-0.0, 0.0]
-    cmd_yaw_range = [-0.4, 0.4]
+    cmd_yaw_range = [-0.4, 0.4] #[-0.4, 0.4]
 
     desired_order = [
         'L_HipYaw_Joint', 'L_HipRoll_Joint', 'L_HipPitch_Joint', 'L_Knee_Joint', 'L_AnklePitch_Joint', 'L_AnkleRoll_Joint', 
@@ -145,7 +145,7 @@ class TocabiAmpEnvCfg(DirectRLEnvCfg):
     )
 
     # scene
-    scene: InteractiveSceneCfg = InteractiveSceneCfg(num_envs=4096, env_spacing=3.0, replicate_physics=True)
+    scene: InteractiveSceneCfg = InteractiveSceneCfg(num_envs=4082, env_spacing=3.0, replicate_physics=True)
 
     # robot
     robot: ArticulationCfg = TOCABI_CFG.replace(prim_path="/World/envs/env_.*/Robot")

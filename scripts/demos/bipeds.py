@@ -43,7 +43,7 @@ from isaaclab.sim import SimulationContext
 from isaaclab_assets.robots.cassie import CASSIE_CFG  # isort:skip
 from isaaclab_assets import H1_CFG  # isort:skip
 from isaaclab_assets import G1_CFG  # isort:skip
-from isaaclab_assets import Tocabi_CFG  # isort:skip
+from isaaclab_assets import TOCABI_CFG  # isort:skip
 
 
 def design_scene(sim: sim_utils.SimulationContext) -> tuple[list, torch.Tensor]:

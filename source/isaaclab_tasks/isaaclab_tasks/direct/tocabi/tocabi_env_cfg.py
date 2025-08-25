@@ -18,7 +18,6 @@ from isaaclab.utils import configclass
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets.robots.tocabi import Tocabi_CFG  # isort: skip
 from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort: skip
 
 

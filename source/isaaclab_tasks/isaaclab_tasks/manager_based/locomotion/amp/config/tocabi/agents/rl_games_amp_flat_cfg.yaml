@@ -113,7 +113,7 @@ params:
 
     wandb: True
     wandb_project: 'tocabi_amp_walk'
-    wandb_entity: 'yongarry'
+    wandb_entity: 'john3-16-seoul-national-university'
     wandb_run_name: 'rl_games'
     wandb_tags: []
     wandb_group: ''

@@ -18,8 +18,8 @@ from isaaclab.utils.assets import ISAACLAB_NUCLEUS_DIR
 
 JET2_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"/home/yong/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2/Jet2_.usd",
-        # usd_path=f"/home/yong/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2/Jet2_viz_coll.usd",
+        usd_path=f"/home/jhk/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2/Jet2_.usd",
+        # usd_path=f"/home/jhk/IsaacGym/IsaacLab/source/isaaclab_assets/data/Robots/Jet2/Jet2_viz_coll.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

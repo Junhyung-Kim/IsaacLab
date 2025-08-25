@@ -104,7 +104,7 @@ agent:
     wandb: False
     wandb_kwargs:
       project: "humanoid_amp_walk"
-      entity: "yongarry"
+      entity: "jhk"
 
 
 

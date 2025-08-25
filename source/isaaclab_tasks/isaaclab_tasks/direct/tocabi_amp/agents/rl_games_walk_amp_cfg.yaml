@@ -77,7 +77,7 @@ params:
     lr_schedule: adaptive
     kl_threshold: 0.008
     score_to_win: 20000
-    max_epochs: 10000
+    max_epochs: 9000
     save_best_after: 1000
     save_frequency: 1000
     grad_norm: 1.0
@@ -85,7 +85,7 @@ params:
     truncate_grads: False
     e_clip: 0.2
     horizon_length: 32
-    minibatch_size: 131072
+    minibatch_size: 32768
     mini_epochs: 6
     critic_coef: 5
     clip_value: False
@@ -96,7 +96,7 @@ params:
     amp_replay_buffer_size: 1000000
     amp_replay_keep_prob: 0.01
     amp_batch_size: 512
-    amp_minibatch_size: 32768 #32768 #131072 # 4096*8
+    amp_minibatch_size: 8384 #32768 #131072 # 4096*8
     disc_coef: 1 #5
     disc_logit_reg: 0.05
     disc_grad_penalty: 1 #5
@@ -113,7 +113,7 @@ params:
 
     wandb: True
     wandb_project: 'tocabi_amp_walk'
-    wandb_entity: 'yongarry'
+    wandb_entity: 'john3-16'
     wandb_run_name: 'rl_games'
     wandb_tags: []
     wandb_group: ''

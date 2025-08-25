@@ -48,7 +48,7 @@ class TocabiAmpEnv(DirectRLEnv):
         self._motion_loader = TocabiMotionLoader(motion_file=self.cfg.motion_file, device=self.device)
 
         # DOF and key body indexes
-        key_body_names = ["L_Foot_Link", "R_Foot_Link"]
+        key_body_names = ["L_AnkleRoll_Link", "R_AnkleRoll_Link"]
 
         self.ref_body_index = self.robot.data.body_names.index(self.cfg.reference_body)
         self.key_body_indexes = [self.robot.data.body_names.index(name) for name in key_body_names]
@@ -59,8 +59,8 @@ class TocabiAmpEnv(DirectRLEnv):
         self.total_mass = torch.sum(self.robot.root_physx_view.get_masses(),dim=1).unsqueeze(1).to(self.device)
 
         # contact sensor ids
-        self.contact_sensor_lfeet_id, _ = self.contact_sensor.find_bodies("L_Foot_Link")
-        self.contact_sensor_rfeet_id, _ = self.contact_sensor.find_bodies("R_Foot_Link")
+        self.contact_sensor_lfeet_id, _ = self.contact_sensor.find_bodies("L_AnkleRoll_Link")
+        self.contact_sensor_rfeet_id, _ = self.contact_sensor.find_bodies("R_AnkleRoll_Link")
 
         # modified observation
         self.num_obs_his = self.cfg.num_obs_hist
