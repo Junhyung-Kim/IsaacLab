@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+from isaaclab_assets import TOCABI_CFG
+
 import isaaclab.envs.mdp as mdp
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg
@@ -91,7 +93,7 @@ class TocabiFlatEnvCfg(DirectRLEnvCfg):
     events: EventCfg = EventCfg()
 
     # robot
-    robot: ArticulationCfg = Tocabi_CFG.replace(prim_path="/World/envs/env_.*/Robot")
+    robot: ArticulationCfg = TOCABI_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*", history_length=3, update_period=0.005, track_air_time=True
     )

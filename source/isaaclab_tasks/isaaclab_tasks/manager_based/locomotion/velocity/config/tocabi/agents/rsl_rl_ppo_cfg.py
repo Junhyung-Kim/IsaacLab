@@ -29,6 +29,7 @@ class TocabiRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         # rnn_num_layers=1,
     # policy = RslRlPpoActorCriticSpectralNormCfg(
         # lipschitz_constant=0.2,
+    '''
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
         actor_hidden_dims=[512, 256, 128],
@@ -55,6 +56,27 @@ class TocabiRoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
             bound_loss_coef=10,
             bound_range=1.1,
         ),
+    )
+    '''
+    policy = RslRlPpoActorCriticCfg(
+        init_noise_std=1.0,
+        actor_hidden_dims=[512, 256, 128],
+        critic_hidden_dims=[512, 256, 128],
+        activation="elu",
+    )
+    algorithm = RslRlPpoAlgorithmCfg(
+        value_loss_coef=1.0,
+        use_clipped_value_loss=True,
+        clip_param=0.2,
+        entropy_coef=0.01,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=1.0e-3,
+        schedule="adaptive",
+        gamma=0.99,
+        lam=0.95,
+        desired_kl=0.01,
+        max_grad_norm=1.0,
     )
 
 @configclass
@@ -95,6 +117,7 @@ class TocabiAMPPPORunnerCfg(TocabiRoughPPORunnerCfg):
         lam=0.95,
         desired_kl=0.004,
         max_grad_norm=1.0,
+        '''
         lcp_cfg=RslRlLcpCfg(
             gradient_penalty_coef=0.005,
         ),
@@ -102,6 +125,7 @@ class TocabiAMPPPORunnerCfg(TocabiRoughPPORunnerCfg):
             bound_loss_coef=10,
             bound_range=1.1,
         ),
+        '''
         amp_cfg=RslRlAMPConfig(
             num_amp_obs_per_step=34,
             num_amp_obs_steps=2,

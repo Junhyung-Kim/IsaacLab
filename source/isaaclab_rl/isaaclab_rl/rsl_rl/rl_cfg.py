@@ -131,10 +131,10 @@ class RslRlPpoAlgorithmCfg:
     in which case RND is not used.
     """
 
-    lcp_cfg: RslRlLcpCfg | None = None
+    #lcp_cfg: RslRlLcpCfg | None = None
     """The configuration for the LCP module. Default is None, in which case LCP is not used."""
 
-    bound_loss_cfg: RslRlBoundLossCfg | None = None
+    #bound_loss_cfg: RslRlBoundLossCfg | None = None
     """The configuration for the bound loss. Default is None, in which case bound loss is not used."""
 
 @configclass

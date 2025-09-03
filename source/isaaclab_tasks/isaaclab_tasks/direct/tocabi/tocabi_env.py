@@ -95,7 +95,9 @@ class TocabiEnv(DirectRLEnv):
         # 2) upper body by policy
         self._processed_actions[:, self._upper_body_joint_ids] = self._robot.data.default_joint_pos[:, self._upper_body_joint_ids]
         
-        shoulder_id, _ = self._robot.find_joints(["L_Shoulder3_Joint"])    def _apply_action(self):
+        shoulder_id, _ = self._robot.find_joints(["L_Shoulder3_Joint"])   
+    
+    def _apply_action(self):
         self._robot.set_joint_position_target(self._processed_actions)
 
     def _get_observations(self) -> dict:
